@@ -3,13 +3,13 @@ var gulp = require("gulp"),
     concat = require("gulp-concat"),
     uglify = require("gulp-uglify"),
     prefix = require("gulp-autoprefixer"),
-    sass = require("gulp-sass"),
+    sass = require("gulp-sass")(require('sass')),
     sourcemaps = require("gulp-sourcemaps"),
     rename = require("gulp-rename"),
     rollup = require("gulp-better-rollup"),
     babel = require("rollup-plugin-babel");
 
-gulp.task("js", function() {
+gulp.task("js", async () => {
     return gulp
         .src("src/js/leaflet-gesture-handling.js")
         .pipe(sourcemaps.init())
@@ -29,7 +29,7 @@ gulp.task("js", function() {
         .pipe(gulp.dest("dist/"));
 });
 
-gulp.task("styles", function() {
+gulp.task("styles", async () => {
     return gulp
         .src("src/scss/**/*.scss")
         .pipe(sass())
@@ -41,14 +41,14 @@ gulp.task("styles", function() {
         .pipe(gulp.dest("dist/"));
 });
 
-gulp.task("dev", function() {
-    gulp.run("styles");
-    gulp.run("js");
+gulp.task("dev", async () => {
+    gulp.task("styles")();
+    gulp.task("js")();
     gulp.watch("src/scss/*.scss", ["styles"]);
     gulp.watch("src/js/*.js", ["js"]);
 });
 
-gulp.task("build", function() {
-    gulp.run("styles");
-    gulp.run("js");
+gulp.task("build", async () => {
+    gulp.task("styles")();
+    gulp.task("js")();
 });
