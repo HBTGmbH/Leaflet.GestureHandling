@@ -18,7 +18,7 @@ gulp.task("js", async () => {
                 { plugins: [babel()] },
                 {
                     file: "dist/leaflet-gesture-handling.js",
-                    format: "umd"
+                    format: "esm"
                 }
             )
         )
