@@ -1,4 +1,4 @@
-var gulp = require("gulp"),
+const gulp = require("gulp"),
     minifyCSS = require("gulp-minify-css"),
     concat = require("gulp-concat"),
     uglify = require("gulp-uglify"),

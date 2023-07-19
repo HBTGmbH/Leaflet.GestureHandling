@@ -3,6 +3,7 @@
 * * Version 1.1.8
 */
 import LanguageContent from "./language-content";
+import * as L from 'leaflet';
 
 L.Map.mergeOptions({
     gestureHandlingOptions: {
@@ -11,10 +12,10 @@ L.Map.mergeOptions({
     }
 });
 
-var draggingMap = false;
+let draggingMap = false;
 
-export var GestureHandling = L.Handler.extend({
-    addHooks: function() {
+export const GestureHandling = L.Handler.extend({
+    addHooks: function () {
         this._handleTouch = this._handleTouch.bind(this);
         this._handleMouseOver = this._handleMouseOver.bind(this);
         this._handleMouseOut = this._handleMouseOut.bind(this);
@@ -37,10 +38,10 @@ export var GestureHandling = L.Handler.extend({
             this._handleScroll,
             this
         );
-        this._map._container.addEventListener("mouseenter", this._handleMouseOver);
-        this._map._container.addEventListener("mouseleave", this._handleMouseOut);
-
-
+        this._map._container.addEventListener("mouseenter",
+            this._handleMouseOver);
+        this._map._container.addEventListener("mouseleave",
+            this._handleMouseOut);
 
         // Listen to these events so will not disable dragging if the user moves the mouse out the boundary of the map container whilst actively dragging the map.
         L.DomEvent.on(this._map, "movestart", this._handleDragging, this);
@@ -48,7 +49,7 @@ export var GestureHandling = L.Handler.extend({
         L.DomEvent.on(this._map, "moveend", this._handleDragging, this);
     },
 
-    removeHooks: function() {
+    removeHooks: function () {
         this._enableInteractions();
 
         this._map._container.removeEventListener(
@@ -72,23 +73,25 @@ export var GestureHandling = L.Handler.extend({
             this._handleScroll,
             this
         );
-        this._map._container.addEventListener("mouseenter", this._handleMouseOver);
-        this._map._container.addEventListener("mouseleave", this._handleMouseOut);
+        this._map._container.addEventListener("mouseenter",
+            this._handleMouseOver);
+        this._map._container.addEventListener("mouseleave",
+            this._handleMouseOut);
 
         L.DomEvent.off(this._map, "movestart", this._handleDragging, this);
         L.DomEvent.off(this._map, "move", this._handleDragging, this);
         L.DomEvent.off(this._map, "moveend", this._handleDragging, this);
     },
 
-    _handleDragging: function(e) {
-        if (e.type == "movestart" || e.type == "move") {
+    _handleDragging: function (e) {
+        if (e.type === "movestart" || e.type === "move") {
             draggingMap = true;
-        } else if (e.type == "moveend") {
+        } else if (e.type === "moveend") {
             draggingMap = false;
         }
     },
 
-    _disableInteractions: function() {
+    _disableInteractions: function () {
         this._map.dragging.disable();
         this._map.scrollWheelZoom.disable();
         if (this._map.tap) {
@@ -96,7 +99,7 @@ export var GestureHandling = L.Handler.extend({
         }
     },
 
-    _enableInteractions: function() {
+    _enableInteractions: function () {
         this._map.dragging.enable();
         this._map.scrollWheelZoom.enable();
         if (this._map.tap) {
@@ -104,15 +107,15 @@ export var GestureHandling = L.Handler.extend({
         }
     },
 
-    _setupPluginOptions: function() {
+    _setupPluginOptions: function () {
         //For backwards compatibility, merge gestureHandlingText into the new options object
         if (this._map.options.gestureHandlingText) {
             this._map.options.gestureHandlingOptions.text = this._map.options.gestureHandlingText;
         }
     },
 
-    _setLanguageContent: function() {
-        var languageContent;
+    _setLanguageContent: function () {
+        let languageContent;
         //If user has supplied custom language, use that
         if (
             this._map.options.gestureHandlingOptions &&
@@ -126,7 +129,7 @@ export var GestureHandling = L.Handler.extend({
             //Otherwise auto set it from the language files
 
             //Determine their language e.g fr or en-US
-            var lang = this._getUserLanguage();
+            let lang = this._getUserLanguage();
 
             //If we couldn't find it default to en
             if (!lang) {
@@ -156,12 +159,12 @@ export var GestureHandling = L.Handler.extend({
         // languageContent = LanguageContent["bg"];
 
         //Check if they're on a mac for display of command instead of ctrl
-        var mac = false;
+        let mac = false;
         if (navigator.platform.toUpperCase().indexOf("MAC") >= 0) {
             mac = true;
         }
 
-        var scrollContent = languageContent.scroll;
+        let scrollContent = languageContent.scroll;
         if (mac) {
             scrollContent = languageContent.scrollMac;
         }
@@ -176,16 +179,15 @@ export var GestureHandling = L.Handler.extend({
         );
     },
 
-    _getUserLanguage: function() {
-        var lang = navigator.languages
+    _getUserLanguage: function () {
+        return navigator.languages
             ? navigator.languages[0]
-            : navigator.language || navigator.userLanguage;
-        return lang;
+            : navigator.language;
     },
 
-    _handleTouch: function(e) {
+    _handleTouch: function (e) {
         //Disregard touch events on the minimap if present
-        var ignoreList = [
+        const ignoreList = [
             "leaflet-control-minimap",
             "leaflet-interactive",
             "leaflet-popup-content",
@@ -195,8 +197,8 @@ export var GestureHandling = L.Handler.extend({
             "leaflet-control-zoom-out"
         ];
 
-        var ignoreElement = false;
-        for (var i = 0; i < ignoreList.length; i++) {
+        let ignoreElement = false;
+        for (let i = 0; i < ignoreList.length; i++) {
             if (L.DomUtil.hasClass(e.target, ignoreList[i])) {
                 ignoreElement = true;
             }
@@ -213,7 +215,7 @@ export var GestureHandling = L.Handler.extend({
                 );
                 this._disableInteractions();
             } else {
-                L.DomUtil.removeClass(this._map._container, 
+                L.DomUtil.removeClass(this._map._container,
                     "leaflet-gesture-handling-touch-warning"
                 );
             }
@@ -227,14 +229,14 @@ export var GestureHandling = L.Handler.extend({
             return;
         }
         if (e.touches.length === 1) {
-            L.DomUtil.addClass(this._map._container, 
+            L.DomUtil.addClass(this._map._container,
                 "leaflet-gesture-handling-touch-warning"
             );
             this._disableInteractions();
         } else {
             e.preventDefault();
             this._enableInteractions();
-            L.DomUtil.removeClass(this._map._container, 
+            L.DomUtil.removeClass(this._map._container,
                 "leaflet-gesture-handling-touch-warning"
             );
         }
@@ -242,7 +244,7 @@ export var GestureHandling = L.Handler.extend({
 
     _isScrolling: false,
 
-    _handleScroll: function(e) {
+    _handleScroll: function (e) {
         if (e.metaKey || e.ctrlKey) {
             e.preventDefault();
             L.DomUtil.removeClass(this._map._container,
@@ -258,12 +260,12 @@ export var GestureHandling = L.Handler.extend({
             clearTimeout(this._isScrolling);
 
             // Set a timeout to run after scrolling ends
-            this._isScrolling = setTimeout(function() {
+            this._isScrolling = setTimeout(function () {
                 // Run the callback
-                var warnings = document.getElementsByClassName(
+                const warnings = document.getElementsByClassName(
                     "leaflet-gesture-handling-scroll-warning"
                 );
-                for (var i = 0; i < warnings.length; i++) {
+                for (let i = 0; i < warnings.length; i++) {
                     L.DomUtil.removeClass(warnings[i],
                         "leaflet-gesture-handling-scroll-warning"
                     );
@@ -272,11 +274,11 @@ export var GestureHandling = L.Handler.extend({
         }
     },
 
-    _handleMouseOver: function(e) {
+    _handleMouseOver: function (e) {
         this._enableInteractions();
     },
 
-    _handleMouseOut: function(e) {
+    _handleMouseOut: function (e) {
         if (!draggingMap) {
             this._disableInteractions();
         }
@@ -286,4 +288,3 @@ export var GestureHandling = L.Handler.extend({
 
 L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
-export default GestureHandling;
